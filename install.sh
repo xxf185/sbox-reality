@@ -390,7 +390,7 @@ download_singbox() {
   local EXPECTED_SHA256=""
   local ACTUAL_SHA256=""
   
-  echo "⬇️ 正在下载 sing-box v${version} (${arch})..." >&2
+  echo "正在下载 sing-box v${version} (${arch})..." >&2
   
   (
     cd "$dest_dir" || exit 1
@@ -411,7 +411,7 @@ download_singbox() {
         EXPECTED_SHA256="${EXPECTED_DIGEST#sha256:}"
         ;;
       "")
-        echo "❌未找到发行包校验信息，下载中止" >&2
+        echo "未找到发行包校验信息，下载中止" >&2
         exit 1
         ;;
       *)
@@ -1090,7 +1090,7 @@ run_show_config() {
   local CURRENT_VERSION=$(get_current_version)
   
   echo "==========================================" >&2
-  echo "📋 sing-box 配置信息" >&2
+  echo "sing-box 配置信息" >&2
   echo "==========================================" >&2
   echo "" >&2
   echo "版本: $CURRENT_VERSION" >&2
