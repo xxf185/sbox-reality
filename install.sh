@@ -1005,45 +1005,6 @@ run_update() {
   esac
 }
 
-run_update_config() {
-  echo "正在更新配置（保留 UUID / 端口 / PublicKey）..."
-  require_root
-  
-  local CONFIG_FILE="$INSTALL_DIR/config.json"
-  
-  if [ ! -f "$CONFIG_FILE" ]; then
-    echo "未找到配置文件: $CONFIG_FILE"
-    exit 1
-  fi
-  
-  ensure_jq || exit 1
-  
-  local UUID=$(jq -r '.inbounds[0].users[0].uuid // empty' "$CONFIG_FILE")
-  local PORT=$(jq -r '.inbounds[0].listen_port // empty' "$CONFIG_FILE")
-  local PRIVATE_KEY=$(jq -r '.inbounds[0].tls.reality.private_key // empty' "$CONFIG_FILE")
-  
-  if [ -z "$UUID" ] || [ -z "$PORT" ] || [ -z "$PRIVATE_KEY" ]; then
-    echo "配置中缺少必要字段（uuid/port/private_key）"
-    exit 1
-  fi
-  
-  echo "生成新配置..."
-  generate_vless_config "$UUID" "$PRIVATE_KEY" "$PORT" "$CONFIG_FILE"
-  
-  echo "已保持 UUID 与端口不变；由于沿用原 private_key，PublicKey 保持不变。"
-  
-  if restart_service; then
-    echo "配置已更新并成功重启"
-  else
-    st=$?
-    if [ "$st" -eq 2 ]; then
-      echo "未检测到服务管理器，需手动重启 sing-box"
-    else
-      echo "服务重启失败，请检查状态"
-    fi
-  fi
-}
-
 run_show_config() {
   local CONFIG_FILE="$INSTALL_DIR/config.json"
   
