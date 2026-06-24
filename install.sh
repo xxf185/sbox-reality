@@ -642,7 +642,6 @@ print_install_result() {
   echo "" >&2
   echo "$vless_url"
   echo ""
-  echo "==========================================" >&2
 }
 
 install_alpine() {
@@ -1080,10 +1079,9 @@ run_show_config() {
   
   local CURRENT_VERSION=$(get_current_version)
   
-  echo "==========================================" >&2
+  echo "" 
   echo "sing-box 配置信息" >&2
-  echo "==========================================" >&2
-  echo "" >&2
+  echo "" 
   echo "版本: $CURRENT_VERSION" >&2
   echo "UUID: $UUID" >&2
   echo "端口: $PORT" >&2
@@ -1101,7 +1099,6 @@ run_show_config() {
   echo "" >&2
   echo "$VLESS_URL"
   echo "" >&2
-  echo "==========================================" >&2
 }
 
 run_show_status() {
@@ -1118,9 +1115,8 @@ run_show_status() {
   
   local CURRENT_VERSION=$(get_current_version)
   
-  echo "=========================================="
+  echo ""
   echo "sing-box 服务状态"
-  echo "=========================================="
   echo ""
   echo "版本: $CURRENT_VERSION"
   echo ""
@@ -1136,9 +1132,8 @@ run_show_status() {
 }
 
 run_uninstall() {
-  echo "=========================================="
+  echo ""
   echo "卸载 sing-box"
-  echo "=========================================="
   echo ""
   if [ "$FORCE_AUTO" != "1" ]; then
     if [ -t 0 ]; then
@@ -1181,14 +1176,14 @@ run_uninstall() {
     echo ""
   fi
   
-  echo "=========================================="
+  echo ""
   echo "sing-box卸载完成"
-  echo "=========================================="
+  echo ""
 }
 
 main_menu() {
   echo ""
-  echo "============sbox-reality=================="
+  echo "----------sbox-reality----------"
   echo "   当前版本:$(get_current_version)" 
   echo "1. 安装sing-box"
   echo "2. 更新sing-box"
@@ -1197,7 +1192,7 @@ main_menu() {
   echo "5. 查看服务状态"
   echo "6. 卸载 sing-box"
   echo "q. 退出"
-  echo "=========================================="
+  echo ""
   printf "选项 [1-6/q]: "
   read -r choice
   
