@@ -395,13 +395,13 @@ download_singbox() {
   (
     cd "$dest_dir" || exit 1
     if ! safe_curl -O "$DOWNLOAD_URL"; then
-      echo "❌ 下载失败，请检查网络连接" >&2
-      echo "💡 下载地址: $DOWNLOAD_URL" >&2
+      echo " 下载失败，请检查网络连接" >&2
+      echo " 下载地址: $DOWNLOAD_URL" >&2
       exit 1
     fi
     
     if [ ! -s "$FILENAME" ]; then
-      echo "❌ 下载的文件为空或不存在" >&2
+      echo " 下载的文件为空或不存在" >&2
       exit 1
     fi
 
@@ -411,32 +411,32 @@ download_singbox() {
         EXPECTED_SHA256="${EXPECTED_DIGEST#sha256:}"
         ;;
       "")
-        echo "❌ 未找到发行包校验信息，下载中止" >&2
+        echo "❌未找到发行包校验信息，下载中止" >&2
         exit 1
         ;;
       *)
-        echo "❌ 不支持的发行包摘要格式: $EXPECTED_DIGEST" >&2
+        echo " 不支持的发行包摘要格式: $EXPECTED_DIGEST" >&2
         exit 1
         ;;
     esac
 
     ACTUAL_SHA256=$(sha256_file "$FILENAME") || exit 1
     if [ "$ACTUAL_SHA256" != "$EXPECTED_SHA256" ]; then
-      echo "❌ 下载文件校验失败" >&2
-      echo "💡 期望: $EXPECTED_SHA256" >&2
-      echo "💡 实际: $ACTUAL_SHA256" >&2
+      echo " 下载文件校验失败" >&2
+      echo " 期望: $EXPECTED_SHA256" >&2
+      echo " 实际: $ACTUAL_SHA256" >&2
       exit 1
     fi
-    echo "✅ 下载文件校验通过" >&2
+    echo "下载文件校验通过" >&2
     
-    echo "📦 正在解压..." >&2
+    echo "正在解压..." >&2
     tar -xzf "$FILENAME"
     if [ ! -d "$EXTRACTED_DIR" ]; then
-      echo "❌ 未找到解压后的目录: $EXTRACTED_DIR" >&2
+      echo " 未找到解压后的目录: $EXTRACTED_DIR" >&2
       exit 1
     fi
     if [ ! -f "$EXTRACTED_DIR/sing-box" ]; then
-      echo "❌ 发行包中缺少 sing-box 主程序" >&2
+      echo " 发行包中缺少 sing-box 主程序" >&2
       exit 1
     fi
 
@@ -447,7 +447,7 @@ download_singbox() {
     rm -rf "$EXTRACTED_DIR" "$FILENAME"
   ) || return 1
   
-  echo "✅ sing-box 下载成功" >&2
+  echo "sing-box 下载成功" >&2
 }
 
 # 服务管理函数
@@ -507,13 +507,13 @@ validate_singbox_binary() {
 
   local detected_version=$("$bin_path" version 2>/dev/null | head -n1 | awk '{print $3}' || echo "unknown")
   if [ "$detected_version" != "$expected_version" ]; then
-    echo "❌ 新程序版本校验失败：期望 $expected_version，实际 $detected_version" >&2
+    echo " 新程序版本校验失败：期望 $expected_version，实际 $detected_version" >&2
     return 1
   fi
 
   if [ -f "$config_file" ] && binary_supports_check "$bin_path"; then
     if ! "$bin_path" check -c "$config_file" >/dev/null 2>&1; then
-      echo "❌ 新程序配置校验失败，请检查: $config_file" >&2
+      echo " 新程序配置校验失败，请检查: $config_file" >&2
       return 1
     fi
   fi
@@ -530,7 +530,7 @@ rollback_release_files() {
     rm -rf "$INSTALL_DIR/$file_name" 2>/dev/null || true
     if [ -e "$backup_dir/$file_name" ] || [ -L "$backup_dir/$file_name" ]; then
       if ! cp -af "$backup_dir/$file_name" "$INSTALL_DIR/$file_name"; then
-        echo "❌ 回滚失败：无法恢复文件 $file_name" >&2
+        echo " 回滚失败：无法恢复文件 $file_name" >&2
         return 1
       fi
     fi
@@ -538,7 +538,7 @@ rollback_release_files() {
 
   if [ -e "$backup_dir/$RELEASE_MANIFEST" ] || [ -L "$backup_dir/$RELEASE_MANIFEST" ]; then
     cp -af "$backup_dir/$RELEASE_MANIFEST" "$INSTALL_DIR/$RELEASE_MANIFEST" || {
-      echo "❌ 回滚失败：无法恢复文件 $RELEASE_MANIFEST" >&2
+      echo " 回滚失败：无法恢复文件 $RELEASE_MANIFEST" >&2
       return 1
     }
   else
@@ -555,7 +555,7 @@ generate_reality_keypair() {
   local key_output=""
 
   if ! key_output=$("$bin_path" generate reality-keypair 2>&1); then
-    echo "❌ 无法执行 sing-box 生成 Reality 密钥，请检查程序文件是否完整" >&2
+    echo " 无法执行 sing-box 生成 Reality 密钥，请检查程序文件是否完整" >&2
     [ -n "$key_output" ] && printf '%s\n' "$key_output" >&2
     return 1
   fi
@@ -564,7 +564,7 @@ generate_reality_keypair() {
   local public_key=$(printf '%s\n' "$key_output" | awk '/PublicKey/ {print $2; exit}')
 
   if [ -z "$private_key" ] || [ -z "$public_key" ]; then
-    echo "❌ Reality 密钥生成失败，请检查 sing-box 输出" >&2
+    echo " Reality 密钥生成失败，请检查 sing-box 输出" >&2
     return 1
   fi
 
@@ -591,7 +591,7 @@ prepare_install_artifacts() {
   mkdir -p "$INSTALL_DIR"
   download_singbox "$version" "$arch" "$INSTALL_DIR" || return 1
 
-  echo "🔐 正在生成密钥..." >&2
+  echo " 正在生成密钥..." >&2
   if ! keys=$(generate_reality_keypair "$INSTALL_DIR/sing-box"); then
     return 1
   fi
@@ -600,9 +600,9 @@ prepare_install_artifacts() {
   uuid=$(uuidgen)
 
   port=$(validate_port "$input_port")
-  echo "📍 使用端口: $port" >&2
+  echo " 使用端口: $port" >&2
 
-  echo "⚙️ 正在生成配置文件..." >&2
+  echo "正在生成配置文件..." >&2
   generate_vless_config "$uuid" "$private_key" "$port" "$INSTALL_DIR/config.json"
   save_public_key "$public_key"
 
@@ -617,7 +617,7 @@ ensure_service_started() {
     return 0
   fi
 
-  echo "❌ sing-box 服务启动失败，请检查状态" >&2
+  echo "sing-box 服务启动失败，请检查状态" >&2
   case "$stype" in
     systemd) systemctl status sing-box --no-pager || true ;;
     openrc) rc-service sing-box status || true ;;
@@ -640,15 +640,15 @@ print_install_result() {
   vless_url=$(generate_vless_url "$uuid" "$domain_or_ip" "$port" "$public_key")
 
   echo "==========================================" >&2
-  echo "✅ sing-box 安装并运行成功！" >&2
+  echo "sing-box 安装成功！" >&2
   echo "==========================================" >&2
   echo "" >&2
-  echo "📦 当前版本: $(get_current_version)" >&2
-  echo "📋 VLESS 链接：" >&2
+  echo "当前版本: $(get_current_version)" >&2
+  echo " ===========链接===========" >&2
   echo "$vless_url"
   echo "" >&2
-  echo "💾 配置文件位置: $INSTALL_DIR/config.json" >&2
-  echo "🔧 服务管理: $service_hint" >&2
+  echo " 配置文件位置: $INSTALL_DIR/config.json" >&2
+  echo " 服务管理: $service_hint" >&2
   [ -n "$log_hint" ] && echo "$log_hint" >&2
   echo "==========================================" >&2
 }
@@ -662,16 +662,16 @@ install_alpine() {
   local PORT=""
   local PUBLIC_KEY=""
   
-  if [ "$(id -u)" != "0" ]; then echo "❌ 请使用 root 权限运行该脚本"; exit 1; fi
+  if [ "$(id -u)" != "0" ]; then echo " 请使用 root 权限运行该脚本"; exit 1; fi
   
   if [ -f /etc/init.d/sing-box ]; then
     if [ "$FORCE_AUTO" != "1" ]; then
       if [ -t 0 ]; then
-        echo "⚠️ sing-box 服务已存在，是否继续安装？[y/N]"
+        echo " sing-box 服务已存在，是否继续安装？[y/N]"
         read -r choice
         [ "$choice" != "y" ] && [ "$choice" != "Y" ] && exit 0
       else
-        echo "ℹ️  非交互环境，默认取消安装（如需继续请使用 --auto）" >&2
+        echo "非交互环境，默认取消安装（如需继续请使用 --auto）" >&2
         exit 0
       fi
     fi
@@ -688,7 +688,7 @@ install_alpine() {
   PORT=$(printf '%s\n' "$INSTALL_INFO" | sed -n '2p')
   PUBLIC_KEY=$(printf '%s\n' "$INSTALL_INFO" | sed -n '3p')
   
-  echo "🔧 正在配置 OpenRC 服务..."
+  echo " 正在配置 OpenRC 服务..."
   cat > /etc/init.d/sing-box <<EOF
 #!/sbin/openrc-run
 name="sing-box"
@@ -729,7 +729,7 @@ install_default() {
   local PORT=""
   local PUBLIC_KEY=""
   
-  if [ "$(id -u)" != "0" ]; then echo "❌ 请使用 root 权限运行该脚本"; exit 1; fi
+  if [ "$(id -u)" != "0" ]; then echo " 请使用 root 权限运行该脚本"; exit 1; fi
   
   if [ -x "$(command -v apt-get)" ]; then
     INSTALL_CMD="apt-get install -y"
@@ -738,17 +738,17 @@ install_default() {
     INSTALL_CMD="dnf install -y"
     UPDATE_CMD="dnf makecache"
   else
-    echo "❌ 不支持的系统类型，未找到 apt-get/dnf"
+    echo "不支持的系统类型，未找到 apt-get/dnf"
     exit 1
   fi
   
-  echo "🔍 正在更新软件包索引..."
+  echo " 正在更新软件包索引..."
   $UPDATE_CMD
   
-  echo "📦 正在检查依赖..."
+  echo " 正在检查依赖..."
   for cmd in curl tar jq uuidgen; do
     if ! command -v "$cmd" >/dev/null 2>&1; then
-      echo "📦 安装缺失组件: $cmd"
+      echo " 安装缺失组件: $cmd"
       case "$cmd" in
         uuidgen) $INSTALL_CMD uuid-runtime 2>/dev/null || $INSTALL_CMD util-linux ;;
         curl|tar|jq) $INSTALL_CMD "$cmd" ;;
@@ -759,7 +759,7 @@ install_default() {
   if command -v systemctl >/dev/null 2>&1 && systemctl is-active --quiet sing-box; then
     if [ "$FORCE_AUTO" != "1" ]; then
       if [ -t 0 ]; then
-        read -r -p "⚠️ sing-box 服务已在运行，是否继续安装？[y/N] " choice
+        read -r -p " sing-box 服务已在运行，是否继续安装？[y/N] " choice
         [ "$choice" != "y" ] && [ "$choice" != "Y" ] && exit 0
       else
         echo "ℹ️  非交互环境，默认取消安装（如需继续请使用 --auto）" >&2
@@ -777,7 +777,7 @@ install_default() {
   PORT=$(printf '%s\n' "$INSTALL_INFO" | sed -n '2p')
   PUBLIC_KEY=$(printf '%s\n' "$INSTALL_INFO" | sed -n '3p')
   
-  echo "🔧 正在配置 systemd 服务..."
+  echo " 正在配置 systemd 服务..."
   cat > /etc/systemd/system/sing-box.service <<EOF
 [Unit]
 Description=sing-box service
@@ -812,7 +812,7 @@ EOF
     exit 1
   fi
   
-  print_install_result "$UUID" "$PORT" "$PUBLIC_KEY" "systemctl [start|stop|restart|status] sing-box" "📊 查看日志: journalctl -u sing-box -f"
+  print_install_result "$UUID" "$PORT" "$PUBLIC_KEY" "systemctl [start|stop|restart|status] sing-box" "查看日志: journalctl -u sing-box -f"
 }
 
 run_config() {
@@ -820,20 +820,20 @@ run_config() {
   if is_alpine_system; then
     sys="alpine"
   fi
-  echo "🧭 系统识别: ${sys}"
+  echo "系统识别: ${sys}"
   echo "---------------------------------------"
   local INPUT_PORT=""
   if [ "$FORCE_AUTO" != "1" ]; then
     if [ -t 0 ]; then
-      printf "🔢 请输入本地监听端口（留空则随机 1025–65535）: "
+      printf " 请输入本地监听端口（留空则随机 1025–65535）: "
       read -r INPUT_PORT
     else
-      echo "ℹ️  非交互环境，端口将随机分配（可用 AUTO_PORT 指定）" >&2
+      echo "非交互环境，端口将随机分配（可用 AUTO_PORT 指定）" >&2
     fi
   else
     INPUT_PORT="$AUTO_PORT"
   fi
-  echo "🛠️ 正在执行配置..."
+  echo " 正在执行配置..."
   echo ""
   
   if is_alpine_system; then
@@ -844,7 +844,7 @@ run_config() {
 }
 
 run_update() {
-  echo "⬆️  正在执行 sing-box 一键更新..."
+  echo " 正在执行 sing-box 一键更新..."
   require_root
 
   if is_alpine_system; then
@@ -852,7 +852,7 @@ run_update() {
   fi
   
   if ! get_singbox_binary >/dev/null 2>&1; then
-    echo "❌ 未找到 sing-box，请先安装"
+    echo "未找到 sing-box，请先安装"
     exit 1
   fi
   
@@ -861,21 +861,21 @@ run_update() {
   
   local stype="$(get_service_type)"
   if [ -z "$stype" ]; then
-    echo "❌ 未找到 sing-box 服务配置"
+    echo " 未找到 sing-box 服务配置"
     exit 1
   fi
   
   local CURRENT_VERSION=$(get_current_version)
   
   local LATEST_VERSION=$(get_latest_version) || exit 1
-  echo "📋 最新版本: $LATEST_VERSION"
+  echo "最新版本: $LATEST_VERSION"
   
   if [ "$CURRENT_VERSION" = "$LATEST_VERSION" ]; then
-    echo "✅ 已是最新版本，无需更新"
+    echo "已是最新版本"
     exit 0
   fi
   
-  echo "🔄 发现新版本，准备更新..."
+  echo "发现新版本，准备更新..."
   
   local ARCH=$(detect_architecture) || exit 1
   local STAGE_DIR=$(mktemp -d /tmp/sing-box-update.XXXXXX)
@@ -888,14 +888,14 @@ run_update() {
   
   trap 'rm -rf "$STAGE_DIR" "$BACKUP_DIR" "$CURRENT_FILES_TMP" "$NEW_FILES_TMP" "$ALL_FILES_TMP"' EXIT INT TERM
   
-  echo "⬇️  下载并预校验新版本..."
+  echo " 下载并预校验新版本..."
   if ! download_singbox "$LATEST_VERSION" "$ARCH" "$STAGE_DIR"; then
-    echo "❌ 下载失败，更新中止（当前服务保持运行）"
+    echo " 下载失败（当前服务保持运行）"
     exit 1
   fi
   
   if ! validate_singbox_binary "$STAGED_BIN" "$LATEST_VERSION"; then
-    echo "❌ 新程序预校验失败，更新中止（当前服务保持运行）"
+    echo "新程序预校验失败，更新中止（当前服务保持运行）"
     exit 1
   fi
   
@@ -908,13 +908,13 @@ run_update() {
   done < "$ALL_FILES_TMP"
 
   if [ "${#RELEASE_FILES[@]}" -eq 0 ]; then
-    echo "❌ 未找到可部署的发行包文件，更新中止"
+    echo "未找到可部署的发行包文件，更新中止"
     exit 1
   fi
   
-  echo "⏹️  停止 sing-box 服务..."
+  echo "停止 sing-box 服务..."
   if ! stop_service; then
-    echo "❌ 停止服务失败，更新中止"
+    echo "停止服务失败，更新中止"
     exit 1
   fi
 
@@ -922,17 +922,17 @@ run_update() {
     cp -af "$INSTALL_DIR/$RELEASE_MANIFEST" "$BACKUP_DIR/$RELEASE_MANIFEST"
   fi
   
-  echo "🔁 正在替换发行包文件..."
+  echo " 正在替换发行包文件..."
   for file_name in "${RELEASE_FILES[@]}"; do
     if [ -e "$INSTALL_DIR/$file_name" ] || [ -L "$INSTALL_DIR/$file_name" ]; then
       if ! cp -af "$INSTALL_DIR/$file_name" "$BACKUP_DIR/$file_name"; then
-        echo "❌ 无法备份旧文件 $file_name，更新中止"
+        echo " 无法备份旧文件 $file_name，更新中止"
         start_service || true
         exit 1
       fi
     fi
     if manifest_has_file "$NEW_FILES_TMP" "$file_name" && ! cp -af "$STAGE_DIR/$file_name" "$INSTALL_DIR/$file_name"; then
-      echo "❌ 替换文件 $file_name 失败，正在回滚..."
+      echo "替换文件 $file_name 失败，正在回滚..."
       rollback_release_files "$BACKUP_DIR" "${RELEASE_FILES[@]}" || true
       start_service || true
       exit 1
@@ -952,22 +952,22 @@ run_update() {
   chown -R nobody:nobody "$INSTALL_DIR" 2>/dev/null || true
   
   if ! validate_singbox_binary "$INSTALL_DIR/sing-box" "$LATEST_VERSION"; then
-    echo "❌ 切换后校验失败，正在回滚旧文件..."
+    echo "切换后校验失败，正在回滚旧文件..."
     if rollback_release_files "$BACKUP_DIR" "${RELEASE_FILES[@]}"; then
       if start_service && is_service_active; then
-        echo "✅ 已回滚到旧版本并恢复服务"
+        echo "已回滚到旧版本并恢复服务"
       else
-        echo "❌ 已回滚旧版本，但服务恢复失败，请手动检查"
+        echo " 已回滚旧版本，但服务恢复失败，请手动检查"
       fi
     else
-      echo "❌ 回滚失败，请手动处理"
+      echo " 回滚失败，请手动处理"
     fi
     exit 1
   fi
   
-  echo "🚀 启动 sing-box 服务..."
+  echo "启动 sing-box 服务..."
   if ! start_service; then
-    echo "❌ 服务启动失败，正在回滚旧文件..."
+    echo " 服务启动失败，正在回滚旧文件..."
     if rollback_release_files "$BACKUP_DIR" "${RELEASE_FILES[@]}"; then
       start_service || true
     fi
@@ -976,15 +976,15 @@ run_update() {
   
   sleep 2
   if ! is_service_active; then
-    echo "❌ 服务启动失败，正在回滚旧文件..."
+    echo "服务启动失败，正在回滚旧文件..."
     if rollback_release_files "$BACKUP_DIR" "${RELEASE_FILES[@]}"; then
       if start_service && is_service_active; then
-        echo "✅ 已回滚到旧版本并恢复服务"
+        echo "已回滚到旧版本并恢复服务"
       else
-        echo "❌ 已回滚旧版本，但服务恢复失败，请手动检查"
+        echo "已回滚旧版本，但服务恢复失败，请手动检查"
       fi
     else
-      echo "❌ 回滚失败，请手动处理"
+      echo " 回滚失败，请手动处理"
     fi
     case "$stype" in
       systemd) systemctl status sing-box || true ;;
@@ -993,15 +993,15 @@ run_update() {
     exit 1
   fi
   
-  echo "✅ 服务启动成功"
+  echo "服务启动成功"
   trap - EXIT INT TERM
   rm -rf "$STAGE_DIR" "$BACKUP_DIR" "$CURRENT_FILES_TMP" "$NEW_FILES_TMP" "$ALL_FILES_TMP"
   
   echo ""
-  echo "🎉 sing-box 更新完成！"
-  echo "📋 版本: $CURRENT_VERSION → $LATEST_VERSION"
+  echo "sing-box 更新完成！"
+  echo "版本: $CURRENT_VERSION → $LATEST_VERSION"
   echo ""
-  echo "🔧 管理命令："
+  echo "管理命令："
   case "$stype" in
     systemd)
       echo "  状态查看: systemctl status sing-box"
@@ -1016,13 +1016,13 @@ run_update() {
 }
 
 run_update_config() {
-  echo "🛠️  正在更新配置（保留 UUID / 端口 / PublicKey）..."
+  echo "正在更新配置（保留 UUID / 端口 / PublicKey）..."
   require_root
   
   local CONFIG_FILE="$INSTALL_DIR/config.json"
   
   if [ ! -f "$CONFIG_FILE" ]; then
-    echo "❌ 未找到配置文件: $CONFIG_FILE"
+    echo "未找到配置文件: $CONFIG_FILE"
     exit 1
   fi
   
@@ -1033,23 +1033,23 @@ run_update_config() {
   local PRIVATE_KEY=$(jq -r '.inbounds[0].tls.reality.private_key // empty' "$CONFIG_FILE")
   
   if [ -z "$UUID" ] || [ -z "$PORT" ] || [ -z "$PRIVATE_KEY" ]; then
-    echo "❌ 配置中缺少必要字段（uuid/port/private_key）"
+    echo "配置中缺少必要字段（uuid/port/private_key）"
     exit 1
   fi
   
-  echo "⚙️ 生成新配置..."
+  echo "生成新配置..."
   generate_vless_config "$UUID" "$PRIVATE_KEY" "$PORT" "$CONFIG_FILE"
   
-  echo "ℹ️  已保持 UUID 与端口不变；由于沿用原 private_key，PublicKey 保持不变。"
+  echo "已保持 UUID 与端口不变；由于沿用原 private_key，PublicKey 保持不变。"
   
   if restart_service; then
-    echo "✅ 配置已更新并成功重启"
+    echo "配置已更新并成功重启"
   else
     st=$?
     if [ "$st" -eq 2 ]; then
-      echo "⚠️  未检测到服务管理器，需手动重启 sing-box"
+      echo "未检测到服务管理器，需手动重启 sing-box"
     else
-      echo "❌ 服务重启失败，请检查状态"
+      echo "服务重启失败，请检查状态"
     fi
   fi
 }
@@ -1058,8 +1058,8 @@ run_show_config() {
   local CONFIG_FILE="$INSTALL_DIR/config.json"
   
   if [ ! -f "$CONFIG_FILE" ]; then
-    echo "❌ 未找到配置文件: $CONFIG_FILE"
-    echo "💡 请先安装 sing-box"
+    echo " 未找到配置文件: $CONFIG_FILE"
+    echo " 请先安装 sing-box"
     exit 1
   fi
   
@@ -1070,7 +1070,7 @@ run_show_config() {
   local PRIVATE_KEY=$(jq -r '.inbounds[0].tls.reality.private_key // empty' "$CONFIG_FILE")
   
   if [ -z "$UUID" ] || [ -z "$PORT" ] || [ -z "$PRIVATE_KEY" ]; then
-    echo "❌ 配置文件格式不正确"
+    echo "配置文件格式不正确"
     exit 1
   fi
   
@@ -1082,8 +1082,8 @@ run_show_config() {
   
   # 如果公钥文件不存在或为空
   if [ -z "$PUBLIC_KEY" ]; then
-    echo "⚠️  未找到保存的公钥文件"
-    echo "💡 提示：安装时的公钥已丢失，建议重新安装或查看安装时的输出"
+    echo "未找到保存的公钥文件"
+    echo "提示：安装时的公钥已丢失，建议重新安装或查看安装时的输出"
     PUBLIC_KEY="<公钥已丢失，请查看安装时的输出或重新安装>"
   fi
   
@@ -1093,46 +1093,46 @@ run_show_config() {
   echo "📋 sing-box 配置信息" >&2
   echo "==========================================" >&2
   echo "" >&2
-  echo "🔢 版本: $CURRENT_VERSION" >&2
-  echo "🔑 UUID: $UUID" >&2
-  echo "🔌 端口: $PORT" >&2
-  echo "🔐 私钥: $PRIVATE_KEY" >&2
-  echo "🔓 公钥: $PUBLIC_KEY" >&2
+  echo "版本: $CURRENT_VERSION" >&2
+  echo "UUID: $UUID" >&2
+  echo "端口: $PORT" >&2
+  echo "私钥: $PRIVATE_KEY" >&2
+  echo "公钥: $PUBLIC_KEY" >&2
   echo "" >&2
   
   # 智能检测IP
-  echo "🌐 正在生成 VLESS 链接..." >&2
+  echo "正在生成 VLESS 链接..." >&2
   local DOMAIN_OR_IP=$(detect_public_ip)
   local VLESS_URL=$(generate_vless_url "$UUID" "$DOMAIN_OR_IP" "$PORT" "$PUBLIC_KEY")
   
   echo "" >&2
-  echo "📋 VLESS 链接：" >&2
+  echo "====================链接===================" >&2
   echo "$VLESS_URL"
   echo "" >&2
-  echo "💾 配置文件: $CONFIG_FILE" >&2
+  echo "配置文件: $CONFIG_FILE" >&2
   echo "==========================================" >&2
 }
 
 run_show_status() {
   if ! get_singbox_binary >/dev/null 2>&1; then
-    echo "❌ sing-box 未安装"
+    echo "sing-box 未安装"
     exit 1
   fi
   
   local stype="$(get_service_type)"
   if [ -z "$stype" ]; then
-    echo "❌ 未找到 sing-box 服务配置"
+    echo "未找到 sing-box 服务配置"
     exit 1
   fi
   
   local CURRENT_VERSION=$(get_current_version)
   
   echo "=========================================="
-  echo "📊 sing-box 服务状态"
+  echo "sing-box 服务状态"
   echo "=========================================="
   echo ""
-  echo "🔢 版本: $CURRENT_VERSION"
-  echo "🔧 服务类型: $stype"
+  echo "版本: $CURRENT_VERSION"
+  echo "服务类型: $stype"
   echo ""
   
   case "$stype" in
@@ -1147,13 +1147,9 @@ run_show_status() {
 
 run_uninstall() {
   echo "=========================================="
-  echo "⚠️  警告：即将卸载 sing-box"
+  echo "卸载 sing-box"
   echo "=========================================="
   echo ""
-  echo "这将删除："
-  echo "  • sing-box 程序文件"
-  echo "  • 配置文件"
-  echo "  • 系统服务配置"
   echo ""
   if [ "$FORCE_AUTO" != "1" ]; then
     if [ -t 0 ]; then
@@ -1165,7 +1161,7 @@ run_uninstall() {
         exit 0
       fi
     else
-      echo "ℹ️  非交互环境，默认取消卸载（如需强制卸载请使用 --auto）" >&2
+      echo "非交互环境，默认取消卸载（如需强制卸载请使用 --auto）" >&2
       exit 0
     fi
   fi
@@ -1175,7 +1171,7 @@ run_uninstall() {
   stype="$(get_service_type)"
   
   if [ -n "$stype" ]; then
-    echo "⏹️  停止服务..."
+    echo "停止服务..."
     case "$stype" in
       systemd)
         systemctl stop sing-box 2>/dev/null || true
@@ -1189,25 +1185,25 @@ run_uninstall() {
         rm -f /etc/init.d/sing-box
         ;;
     esac
-    echo "✅ 服务已停止并移除"
+    echo "服务已停止并移除"
   fi
 
   if [ -d "$INSTALL_DIR" ]; then
-    echo "🗑️  删除程序文件..."
+    echo "删除程序文件..."
     rm -rf "$INSTALL_DIR"
-    echo "✅ 程序文件已删除"
+    echo "程序文件已删除"
   fi
   
   echo ""
   echo "=========================================="
-  echo "✅ sing-box 已完全卸载"
+  echo "sing-box卸载完成"
   echo "=========================================="
 }
 
 main_menu() {
-  echo "=========================================="
-  echo "  sing-box 管理脚本"
-  echo "=========================================="
+  echo ""
+  echo "============sbox-reality=================="
+  echo ""
   echo "1. 安装 sing-box"
   echo "2. 更新 sing-box"
   echo "3. 更新配置文件"
@@ -1216,7 +1212,7 @@ main_menu() {
   echo "6. 卸载 sing-box"
   echo "q. 退出"
   echo "=========================================="
-  printf "请选择 [1-6/q]: "
+  printf "选项 [1-6/q]: "
   read -r choice
   
   case "$choice" in
