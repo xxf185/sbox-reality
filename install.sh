@@ -1132,7 +1132,6 @@ run_show_status() {
   echo "=========================================="
   echo ""
   echo "版本: $CURRENT_VERSION"
-  echo "服务类型: $stype"
   echo ""
   
   case "$stype" in
@@ -1204,8 +1203,8 @@ main_menu() {
   echo ""
   echo "============sbox-reality=================="
   echo ""
-  echo "1. 安装 sing-box"
-  echo "2. 更新 sing-box"
+  echo "1. 安装sing-box"
+  echo "2. 更新sing-box"
   echo "3. 更新配置文件"
   echo "4. 查看配置信息"
   echo "5. 查看服务状态"
