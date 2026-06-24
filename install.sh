@@ -639,13 +639,11 @@ print_install_result() {
   domain_or_ip=$(detect_public_ip)
   vless_url=$(generate_vless_url "$uuid" "$domain_or_ip" "$port" "$public_key")
 
-  echo "==========================================" >&2
-  echo "sing-box 安装成功！" >&2
-  echo "==========================================" >&2
   echo "" >&2
-  echo "当前版本: $(get_current_version)" >&2
+  echo "sing-box 安装成功！" >&2
+  echo "" >&2
   echo " ==================链接====================" >&2
-    echo "" >&2
+  echo "" >&2
   echo "$vless_url"
   echo "" >&2
   echo " 配置文件位置: $INSTALL_DIR/config.json" >&2
