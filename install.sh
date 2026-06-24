@@ -3,7 +3,7 @@ set -e
 
 FORCE_AUTO="${FORCE_AUTO:-0}"
 INSTALL_DIR="/etc/sing-box"
-SNI="updates.cdn-apple.com"
+SNI="www.ebay.com"
 RELEASE_MANIFEST=".release-files"
 
 require_root() {
