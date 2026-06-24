@@ -1078,6 +1078,23 @@ run_show_config() {
     PUBLIC_KEY="<公钥已丢失，请查看安装时的输出或重新安装>"
   fi
   
+  local CURRENT_VERSION=$(get_current_version)
+  
+  echo "==========================================" >&2
+  echo "sing-box 配置信息" >&2
+  echo "==========================================" >&2
+  echo "" >&2
+  echo "版本: $CURRENT_VERSION" >&2
+  echo "UUID: $UUID" >&2
+  echo "端口: $PORT" >&2
+  echo "私钥: $PRIVATE_KEY" >&2
+  echo "公钥: $PUBLIC_KEY" >&2
+  echo "" >&2
+  
+  # 智能检测IP
+  echo "正在生成 VLESS 链接..." >&2
+  local DOMAIN_OR_IP=$(detect_public_ip)
+  local VLESS_URL=$(generate_vless_url "$UUID" "$DOMAIN_OR_IP" "$PORT" "$PUBLIC_KEY")
   
   echo "" >&2
   echo "====================链接===================" >&2
