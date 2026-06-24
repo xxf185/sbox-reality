@@ -259,7 +259,7 @@ get_release_asset_digest() {
   local filename="$2"
 
   safe_curl -H "Accept: application/vnd.github+json" -H "User-Agent: curl/8" \
-    "https://api.github.com/repos/SagerNet/sing-box/releases/tags/v${version}" \
+    "https://api.github.com/repos/xxf185/sing-box/releases/tags/v${version}" \
     | jq -r --arg filename "$filename" '.assets[]? | select(.name == $filename) | .digest // empty' \
     | head -n1
 }
@@ -315,7 +315,7 @@ manifest_has_file() {
 
 ensure_jq() {
   if command_exists jq; then return 0; fi
-  echo "📦 正在安装 jq..." >&2
+  echo " 正在安装 jq..." >&2
   
   if command_exists apk; then
     apk update >/dev/null 2>&1 || true
@@ -332,16 +332,16 @@ ensure_jq() {
   fi
   
   if ! command_exists jq; then
-    echo "❌ jq 安装失败，请手动安装后重试" >&2
+    echo " jq 安装失败，请手动安装后重试" >&2
     return 1
   fi
-  echo "✅ jq 安装成功" >&2
+  echo " jq 安装成功" >&2
   return 0
 }
 
 ensure_curl() {
   if command_exists curl; then return 0; fi
-  echo "📦 正在安装 curl..." >&2
+  echo " 正在安装 curl..." >&2
   
   if command_exists apk; then
     apk update >/dev/null 2>&1 || true
@@ -358,10 +358,10 @@ ensure_curl() {
   fi
   
   if ! command_exists curl; then
-    echo "❌ curl 安装失败，请手动安装后重试" >&2
+    echo " curl 安装失败，请手动安装后重试" >&2
     return 1
   fi
-  echo "✅ curl 安装成功" >&2
+  echo " curl 安装成功" >&2
   return 0
 }
 
@@ -384,7 +384,7 @@ download_singbox() {
   local dest_dir="$3"
   
   local FILENAME="sing-box-${version}-linux-${arch}.tar.gz"
-  local DOWNLOAD_URL="https://github.com/SagerNet/sing-box/releases/download/v${version}/${FILENAME}"
+  local DOWNLOAD_URL="https://github.com/xxf185/sing-box/releases/latest/download/${FILENAME}"
   local EXTRACTED_DIR="sing-box-${version}-linux-${arch}"
   local EXPECTED_DIGEST=""
   local EXPECTED_SHA256=""
