@@ -1201,7 +1201,6 @@ run_uninstall() {
 main_menu() {
   echo ""
   echo "============sbox-reality=================="
-  echo ""
   echo "1. 安装sing-box"
   echo "2. 更新sing-box"
   echo "3. 更新配置文件"
