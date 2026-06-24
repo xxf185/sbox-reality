@@ -1145,7 +1145,7 @@ run_uninstall() {
 main_menu() {
   echo ""
   echo "----------sbox-reality----------"
-  echo "   当前版本:$(get_current_version)" 
+  echo "" 
   echo "1. 安装sing-box"
   echo "2. 更新sing-box"
   echo "3. 查看配置信息"
@@ -1153,7 +1153,7 @@ main_menu() {
   echo "5. 卸载 sing-box"
   echo "0. 退出"
   echo ""
-  printf "选项 [1-6/q]: "
+  printf "选项 [1-6]: "
   read -r choice
   
   case "$choice" in
@@ -1196,7 +1196,7 @@ main() {
       ;;
     *)
       echo "未知参数: $1"
-      echo "可用参数: [-y/--auto] install(i) | update(u) | config(c) | info | status(s) | uninstall"
+      echo "可用参数: [-y/--auto] install(i) | update(u) | info | status(s) | uninstall"
       exit 1
       ;;
   esac
