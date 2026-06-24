@@ -8,7 +8,7 @@ RELEASE_MANIFEST=".release-files"
 
 require_root() {
   if [ "$(id -u)" != "0" ]; then
-    echo "❌ 请使用 root 权限运行该脚本"
+    echo " 请使用 root 权限运行该脚本"
     exit 1
   fi
 }
@@ -44,7 +44,7 @@ detect_architecture() {
     ppc64le) echo "ppc64le" ;;
     riscv64) echo "riscv64" ;;
     s390x) echo "s390x" ;;
-    *) echo "❌ 不支持的架构: $UNAME_ARCH" >&2; return 1 ;;
+    *) echo "不支持的架构: $UNAME_ARCH" >&2; return 1 ;;
   esac
 }
 
@@ -71,14 +71,14 @@ validate_port() {
   
   case "$input_port" in
     *[!0-9]*)
-      echo "⚠️ 非法端口 \"$input_port\"，将随机分配。" >&2
+      echo " 非法端口 \"$input_port\"，将随机分配。" >&2
       random_port
       ;;
     *)
       if [ "$input_port" -ge 1 ] && [ "$input_port" -le 65535 ]; then
         echo "$input_port"
       else
-        echo "⚠️ 端口超出范围(1–65535)，将随机分配。" >&2
+        echo " 端口超出范围(1–65535)，将随机分配。" >&2
         random_port
       fi
       ;;
@@ -115,22 +115,22 @@ generate_vless_config() {
 }
 
 get_latest_version() {
-  echo "🔍 正在检查最新版本..." >&2
+  echo " 正在检查最新版本..." >&2
   VERSION_TAG=$(
     safe_curl -H "Accept: application/vnd.github+json" -H "User-Agent: curl/8" \
-      https://api.github.com/repos/SagerNet/sing-box/releases/latest \
+      https://api.github.com/repos/xxf185/sing-box/releases/latest \
       | jq -r '.tag_name // empty' 2>/dev/null
   )
   VERSION_TAG=$(printf "%s" "$VERSION_TAG" | tr -d '\r' | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')
   if [ -z "$VERSION_TAG" ] || [ "$VERSION_TAG" = "null" ]; then
-    echo "❌ 无法获取最新版本信息，请检查网络连接或稍后重试" >&2
-    echo "💡 可能原因：网络问题、GitHub API限流、或防火墙拦截" >&2
+    echo " 无法获取最新版本信息，请检查网络连接或稍后重试" >&2
+    echo " 可能原因：网络问题、GitHub API限流、或防火墙拦截" >&2
     return 1
   fi
   printf "%s" "${VERSION_TAG#v}"
 }
 
-# ✅ 修复：强制 v4/v6 探测 + 结果校验；未检测到时显示“无”
+#  修复：强制 v4/v6 探测 + 结果校验；未检测到时显示“无”
 # 检测公网 IP（stdout 只输出最终 IP/域名；日志到 stderr）
 detect_public_ip() {
   echo "🔍 正在检测公网IP地址..." >&2
