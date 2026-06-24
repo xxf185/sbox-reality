@@ -820,12 +820,12 @@ run_config() {
   if is_alpine_system; then
     sys="alpine"
   fi
-  echo "系统识别: ${sys}"
-  echo "---------------------------------------"
+
+  echo ""
   local INPUT_PORT=""
   if [ "$FORCE_AUTO" != "1" ]; then
     if [ -t 0 ]; then
-      printf " 请输入本地监听端口（留空则随机 1025–65535）: "
+      printf " 请输入端口（留空则随机 1025–65535）: "
       read -r INPUT_PORT
     else
       echo "非交互环境，端口将随机分配（可用 AUTO_PORT 指定）" >&2
