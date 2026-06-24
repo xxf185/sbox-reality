@@ -133,7 +133,7 @@ get_latest_version() {
 #  修复：强制 v4/v6 探测 + 结果校验；未检测到时显示“无”
 # 检测公网 IP（stdout 只输出最终 IP/域名；日志到 stderr）
 detect_public_ip() {
-  echo "🔍 正在检测公网IP地址..." >&2
+  echo " 正在检测公网IP地址..." >&2
 
   # 分别强制使用 IPv4 / IPv6；失败不会中断脚本（set -e 安全处理）
   RAW4=$( (safe_curl -4 https://api.ipify.org 2>/dev/null || true) | tr -d '\r\n' )
@@ -159,14 +159,14 @@ detect_public_ip() {
   is_ipv6 "$RAW6" && IPV6="$RAW6"
 
   if [ -n "$IPV4" ]; then
-    echo "✅ 检测到 IPv4: $IPV4" >&2
+    echo " 检测到 IPv4: $IPV4" >&2
   else
-    echo "ℹ️  IPv4: 无" >&2
+    echo "  IPv4: 无" >&2
   fi
   if [ -n "$IPV6" ]; then
-    echo "✅ 检测到 IPv6: $IPV6" >&2
+    echo " 检测到 IPv6: $IPV6" >&2
   else
-    echo "ℹ️  IPv6: 无" >&2
+    echo "  IPv6: 无" >&2
   fi
 
   if [ -n "$IPV6" ] && [ -n "$IPV4" ]; then
@@ -186,11 +186,11 @@ detect_public_ip() {
           case "$ip_choice" in
             4) printf "%s" "$IPV4"; break ;;
             6|"") printf "%s" "$IPV6"; break ;;
-            *) echo "⚠️ 请输入 4 或 6" >&2 ;;
+            *) echo " 请输入 4 或 6" >&2 ;;
           esac
         done
       else
-        echo "ℹ️  非交互环境，默认使用 IPv6" >&2
+        echo "  非交互环境，默认使用 IPv6" >&2
         printf "%s" "$IPV6"
       fi
     fi
@@ -199,7 +199,7 @@ detect_public_ip() {
   elif [ -n "$IPV4" ]; then
     printf "%s" "$IPV4"
   else
-    echo "⚠️ 无法检测到公网IP，请手动替换" >&2
+    echo " 无法检测到公网IP，请手动替换" >&2
     printf "%s" "yourdomain.com"
   fi
 }
@@ -219,16 +219,16 @@ generate_vless_url() {
   local public_key="$4"
   
   local formatted_ip=$(format_ip_for_url "$ip")
-  echo "vless://${uuid}@${formatted_ip}:${port}?encryption=none&flow=xtls-rprx-vision&security=reality&sni=${SNI}&fp=firefox&pbk=${public_key}#VLESS-REALITY"
+  echo "vless://${uuid}@${formatted_ip}:${port}?encryption=none&flow=xtls-rprx-vision&security=reality&sni=${SNI}&fp=firefox&pbk=${public_key}#reality"
 }
 
 ensure_alpine_github_dependencies() {
-  echo "📦 正在安装 Alpine 依赖..." >&2
+  echo "正在安装 Alpine 依赖..." >&2
   apk update
   apk add curl jq tar util-linux gcompat
 
   for cmd in curl jq tar uuidgen; do
-    command -v "$cmd" >/dev/null 2>&1 || { echo "❌ 缺少必要命令: $cmd" >&2; return 1; }
+    command -v "$cmd" >/dev/null 2>&1 || { echo " 缺少必要命令: $cmd" >&2; return 1; }
   done
 
   return 0
@@ -250,7 +250,7 @@ sha256_file() {
     return 0
   fi
 
-  echo "❌ 未找到可用的 SHA256 校验命令（sha256sum/shasum/openssl）" >&2
+  echo " 未找到可用的 SHA256 校验命令（sha256sum/shasum/openssl）" >&2
   return 1
 }
 
