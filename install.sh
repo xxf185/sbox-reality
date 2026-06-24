@@ -638,7 +638,7 @@ print_install_result() {
   echo "" >&2
   echo "sing-box 安装成功！" >&2
   echo "" >&2
-  echo " ==================链接====================" >&2
+  echo "----------链接----------" >&2
   echo "" >&2
   echo "$vless_url"
   echo ""
@@ -1095,7 +1095,7 @@ run_show_config() {
   local VLESS_URL=$(generate_vless_url "$UUID" "$DOMAIN_OR_IP" "$PORT" "$PUBLIC_KEY")
   
   echo "" >&2
-  echo "====================链接===================" >&2
+  echo "----------链接----------" >&2
   echo "" >&2
   echo "$VLESS_URL"
   echo "" >&2
