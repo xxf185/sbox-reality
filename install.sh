@@ -644,12 +644,12 @@ print_install_result() {
   echo "==========================================" >&2
   echo "" >&2
   echo "当前版本: $(get_current_version)" >&2
-  echo " ===========链接===========" >&2
+  echo " ==================链接====================" >&2
+    echo "" >&2
   echo "$vless_url"
   echo "" >&2
   echo " 配置文件位置: $INSTALL_DIR/config.json" >&2
-  echo " 服务管理: $service_hint" >&2
-  [ -n "$log_hint" ] && echo "$log_hint" >&2
+  echo ""
   echo "==========================================" >&2
 }
 
@@ -1189,9 +1189,9 @@ run_uninstall() {
   fi
 
   if [ -d "$INSTALL_DIR" ]; then
-    echo "删除程序文件..."
+    echo ""
     rm -rf "$INSTALL_DIR"
-    echo "程序文件已删除"
+    echo ""
   fi
   
   echo ""
