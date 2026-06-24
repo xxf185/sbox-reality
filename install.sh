@@ -1187,11 +1187,10 @@ main_menu() {
   echo "   当前版本:$(get_current_version)" 
   echo "1. 安装sing-box"
   echo "2. 更新sing-box"
-  echo "3. 更新配置文件"
-  echo "4. 查看配置信息"
-  echo "5. 查看服务状态"
-  echo "6. 卸载 sing-box"
-  echo "q. 退出"
+  echo "3. 查看配置信息"
+  echo "4. 查看服务状态"
+  echo "5. 卸载 sing-box"
+  echo "0. 退出"
   echo ""
   printf "选项 [1-6/q]: "
   read -r choice
@@ -1199,11 +1198,10 @@ main_menu() {
   case "$choice" in
     1) require_root; run_config ;;
     2) require_root; run_update ;;
-    3) require_root; run_update_config ;;
-    4) run_show_config ;;
-    5) run_show_status ;;
-    6) run_uninstall ;;
-    q|Q) echo "已退出。"; exit 0 ;;
+    3) run_show_config ;;
+    4) run_show_status ;;
+    5) run_uninstall ;;
+    0) echo "已退出。"; exit 0 ;;
     *) echo "无效选择"; exit 2 ;;
   esac
 }
@@ -1222,10 +1220,6 @@ main() {
     update|u)
       require_root
       run_update
-      ;;
-    config|c)
-      require_root
-      run_update_config
       ;;
     info)
       run_show_config
