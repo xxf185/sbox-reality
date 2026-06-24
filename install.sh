@@ -124,7 +124,6 @@ get_latest_version() {
   VERSION_TAG=$(printf "%s" "$VERSION_TAG" | tr -d '\r' | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')
   if [ -z "$VERSION_TAG" ] || [ "$VERSION_TAG" = "null" ]; then
     echo " 无法获取最新版本信息，请检查网络连接或稍后重试" >&2
-    echo " 可能原因：网络问题、GitHub API限流、或防火墙拦截" >&2
     return 1
   fi
   printf "%s" "${VERSION_TAG#v}"
@@ -396,7 +395,6 @@ download_singbox() {
     cd "$dest_dir" || exit 1
     if ! safe_curl -O "$DOWNLOAD_URL"; then
       echo " 下载失败，请检查网络连接" >&2
-      echo " 下载地址: $DOWNLOAD_URL" >&2
       exit 1
     fi
     
@@ -634,8 +632,6 @@ print_install_result() {
   local domain_or_ip=""
   local vless_url=""
 
-  echo ""
-  echo "==========================================" >&2
   domain_or_ip=$(detect_public_ip)
   vless_url=$(generate_vless_url "$uuid" "$domain_or_ip" "$port" "$public_key")
 
@@ -645,8 +641,6 @@ print_install_result() {
   echo " ==================链接====================" >&2
   echo "" >&2
   echo "$vless_url"
-  echo "" >&2
-  echo " 配置文件位置: $INSTALL_DIR/config.json" >&2
   echo ""
   echo "==========================================" >&2
 }
@@ -775,7 +769,6 @@ install_default() {
   PORT=$(printf '%s\n' "$INSTALL_INFO" | sed -n '2p')
   PUBLIC_KEY=$(printf '%s\n' "$INSTALL_INFO" | sed -n '3p')
   
-  echo " 正在配置 systemd 服务..."
   cat > /etc/systemd/system/sing-box.service <<EOF
 [Unit]
 Description=sing-box service
@@ -831,7 +824,6 @@ run_config() {
   else
     INPUT_PORT="$AUTO_PORT"
   fi
-  echo " 正在执行配置..."
   echo ""
   
   if is_alpine_system; then
@@ -842,7 +834,7 @@ run_config() {
 }
 
 run_update() {
-  echo " 正在执行 sing-box 一键更新..."
+  echo " 正在更新sing-box..."
   require_root
 
   if is_alpine_system; then
@@ -997,6 +989,7 @@ run_update() {
   
   echo ""
   echo "sing-box 更新完成！"
+  echo ""
   echo "版本: $CURRENT_VERSION → $LATEST_VERSION"
   echo ""
   echo "管理命令："
@@ -1107,7 +1100,6 @@ run_show_config() {
   echo "====================链接===================" >&2
   echo "$VLESS_URL"
   echo "" >&2
-  echo "配置文件: $CONFIG_FILE" >&2
   echo "==========================================" >&2
 }
 
@@ -1146,7 +1138,6 @@ run_uninstall() {
   echo "=========================================="
   echo "卸载 sing-box"
   echo "=========================================="
-  echo ""
   echo ""
   if [ "$FORCE_AUTO" != "1" ]; then
     if [ -t 0 ]; then
