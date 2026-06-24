@@ -1170,7 +1170,6 @@ run_uninstall() {
   stype="$(get_service_type)"
   
   if [ -n "$stype" ]; then
-    echo "停止服务..."
     case "$stype" in
       systemd)
         systemctl stop sing-box 2>/dev/null || true
@@ -1184,7 +1183,6 @@ run_uninstall() {
         rm -f /etc/init.d/sing-box
         ;;
     esac
-    echo "服务已停止并移除"
   fi
 
   if [ -d "$INSTALL_DIR" ]; then
