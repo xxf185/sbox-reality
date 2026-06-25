@@ -5,7 +5,7 @@ set -e
 CONFIG_FILE=/etc/sing-box/config.json
 CLIENT_INFO_FILE=/etc/sing-box/reality-client.txt
 QR_PNG_FILE=/etc/sing-box/reality-client.png
-DEFAULT_CAMOUFLAGE=www.microsoft.com
+DEFAULT_CAMOUFLAGE=www.ebay.com
 DEFAULT_PORT=10443
 
 ensure_root() {
@@ -23,7 +23,7 @@ install_deps() {
 
 install_sing_box() {
   echo "开始安装 sing-box 核心"
-  bash <(curl -fsSL https://sing-box.app/deb-install.sh)
+  bash <(curl -fsSL https://raw.githubusercontent.com/xxf185/sbox-reality/refs/heads/main/deb-install.sh)
   systemctl enable sing-box
   echo "sing-box 安装完成"
 }
@@ -96,7 +96,7 @@ UUID=${UUID}
 PUBLIC_KEY=${PUBLIC_KEY}
 SHORT_ID=${SHORT_ID}
 SNI=${CAMOUFLAGE_DOMAIN}
-SHADOWROCKET_URI=vless://${UUID}@${SERVER_HOST}:${PORT}?encryption=none&security=reality&sni=${CAMOUFLAGE_DOMAIN}&fp=chrome&pbk=${PUBLIC_KEY}&sid=${SHORT_ID}&type=tcp#reality-${SERVER_HOST}
+SHADOWROCKET_URI=vless://${UUID}@${SERVER_HOST}:${PORT}?encryption=none&security=reality&sni=${CAMOUFLAGE_DOMAIN}&fp=chrome&pbk=${PUBLIC_KEY}&sid=${SHORT_ID}&type=tcp#reality
 EOF
 }
 
@@ -244,7 +244,7 @@ init_menu() {
  11. 生成二维码(终端+PNG)
 "
 
-  read -p "请输入选择[0-11]: " choice
+  read -p "选项[0-11]: " choice
   if grep '^[[:digit:]]*$' <<< "${choice}"; then
     if ((choice >= 0 && choice <= 11)); then
       case $choice in
