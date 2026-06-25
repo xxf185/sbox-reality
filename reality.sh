@@ -226,16 +226,15 @@ show_config_summary() {
 }
 
 init_menu() {
-  echo "欢迎使用本脚本"
-  echo "--- auto-reality ---
+  echo ""
+  echo "--------------reality---------------"
+  echo ""
   0. 安装 sing-box 和 Reality(VLESS)
   1. 卸载 sing-box 和 Reality
-————————————————
   2. 启动 sing-box
   3. 停止 sing-box
   4. 重启 sing-box
   5. 查看 sing-box 状态
-————————————————
   6. 查看 sing-box 日志
   7. 编辑 sing-box 配置文件
   8. 查看客户端配置参数
