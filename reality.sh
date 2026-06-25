@@ -228,7 +228,7 @@ show_config_summary() {
 init_menu() {
   echo ""
   echo "--------------reality---------------"
-  echo ""
+  echo "
   0. 安装 sing-box 和 Reality(VLESS)
   1. 卸载 sing-box 和 Reality
   2. 启动 sing-box
