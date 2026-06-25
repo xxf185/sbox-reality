@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+
 
 FORCE_AUTO="${FORCE_AUTO:-0}"
 INSTALL_DIR="/etc/sing-box"
