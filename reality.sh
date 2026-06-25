@@ -1,6 +1,5 @@
 #!/bin/bash
 
-set -e
 
 CONFIG_FILE=/etc/sing-box/config.json
 CLIENT_INFO_FILE=/etc/sing-box/reality-client.txt
