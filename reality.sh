@@ -95,7 +95,7 @@ UUID=${UUID}
 PUBLIC_KEY=${PUBLIC_KEY}
 SHORT_ID=${SHORT_ID}
 SNI=${CAMOUFLAGE_DOMAIN}
-SHADOWROCKET_URI=vless://${UUID}@${SERVER_HOST}:${PORT}?encryption=none&security=reality&sni=${CAMOUFLAGE_DOMAIN}&flow=xtls-rprx-vision&fp=chrome&pbk=${PUBLIC_KEY}&sid=${SHORT_ID}&type=tcp#reality
+SHADOWROCKET_URI=vless://${UUID}@${SERVER_HOST}:${PORT}?encryption=none&security=reality&fp=chrome&sni=${CAMOUFLAGE_DOMAIN}&flow=xtls-rprx-vision&pbk=${PUBLIC_KEY}&sid=${SHORT_ID}&type=tcp#reality
 EOF
 }
 
